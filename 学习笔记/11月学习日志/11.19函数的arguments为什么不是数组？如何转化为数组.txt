@@ -1,0 +1,59 @@
+因为arguments本身并不能调用数组方法，是另一种对象类型，只不过属性从0开始排，依次为0，1，2...最后还有callee和length属性。我们也把这样的对象称为类数组。
+
+常见的类数组还有：
+
+·1.用getElementsByTagName/ClassName()获得的HTMLCollection
+
+·2.用querySelector获得的nodeList
+
+这就导致很多数组的方法不能用了，必要时需要我们将它们转换为数组，有如下方法
+
+##### 1.Array.prototype.slice.call()
+
+function sum(a,b) {
+
+​       let args = Array.prototype.slice.call(arguments);
+
+​       console.log(arg.reduce((sum,cur) => sum + cur));//args可以调用数组原生的方法
+
+}
+
+sum(1,2);//3
+
+##### 2.Array.from()
+
+function sum(a,b) {
+
+​       let args = Array.from(arguments);       
+
+​       console.log(args.reduce((sum,cur) => sum + cur));
+
+}
+
+sum(1,2);//3
+
+这种方法也可以用来转换Set和Map
+
+##### 3.ES6展开运算符
+
+function sum(a,b) {
+
+​       let args = [...arguments];
+
+​       console.log(args.reduce((sum,cur) => sum + cur));//args 可以调用数组原生的方法
+
+} 
+
+sum(1,2);//3
+
+4.利用concat+apply
+
+function sum(a,b) {
+
+​       let args = Array.prototype.concat.apply([],arguments);// apply 方法会把第二个参数展开
+
+​       console.log(args.reduce((sum,cur) => sum + cur)); //args 可以调用数组原生的方法
+
+}
+
+最原始的是再创建一个数组，用for循环把类数组的每个属性值放在里面；

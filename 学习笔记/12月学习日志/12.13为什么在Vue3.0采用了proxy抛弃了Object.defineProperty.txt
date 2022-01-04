@@ -1,0 +1,34 @@
+研读文档：https://www.cnblogs.com/tugenhua0707/p/10306793.html
+
+​                   https://www.cnblogs.com/goloving/p/12911476.html
+
+
+
+Object.defineProperty 本身有一定的监控到数组下标变化的能力，但是在Vue中，从性能/体验的性价比考虑，尤大弃用了这一特性。
+
+Object.defineProperty 只对初始对象里的属性有监听作用，而对新增的属性无效；
+
+Object.defineProperty 只能劫持对象的属性，我们需要对每个对象的每个属性进行遍历。Vue2.x里是通过递归 + 遍历 data对象来实现对数据的监控的，如果属性值也是对象那么需要深度遍历，如果能劫持一个完整的对象才是更好的选择；
+
+Proxy可以劫持整个对象，并返回一个新的对象。Proxy不仅可以代理对象，还可以代理数组；还可以代理动态增加的属性；
+
+##### Proxy与Object.defineProperty优劣对比
+
+Proxy的优势如下：
+
+·Proxy可以直接监听对象而非属性；
+
+·Proxy可以直接监听数组的变化
+
+·Proxy有多达13中拦截方法，不限于apply，ownKeys,deleteProperty,has等等是Object.defineProperty不具备的；
+
+·proxy返回的是一个新对象，我们可以只操作新的对象达到目的，而Object.defineProperty只能遍历对象属性直接修改；
+
+·proxy返回的是一个新对象，我们可以只操作新的对象达到目的，而Object.defineProperty 只能遍历对象属性直接修改；
+
+·proxy作为新标准将受到浏览器厂商重点持续的性能优化，也就是说新标准的性能红利；
+
+Object.defineProperty 的优势如下：
+
+·兼容性好，支持IE9，而Proxy的存在浏览器兼容性问题而且无法用polyfill 磨平，因此 Vue 的作者才声明需要等到下个大版本( 3.0 )才能用 Proxy 重写。
+

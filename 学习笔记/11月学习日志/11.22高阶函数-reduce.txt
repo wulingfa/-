@@ -1,0 +1,19 @@
+### reduce
+
+·参数：接收两个参数，一个为回调函数，另一个为初始值。回调函数中四个默认参数，依次为积累值，当前值，当前索引和整个数组。
+
+let nums = [1,2,3];
+
+//多个数的加和
+
+let newNums = nums.reduce(function(preSum,curVal,currentIndex,array) {
+
+   return preSum + curVal;
+
+},0);
+
+console.log(newNums);//6
+
+不传默认值会怎样？
+
+不传默认值会自动以第一个元素为初始值，然后从第二个元素开始依次累计。

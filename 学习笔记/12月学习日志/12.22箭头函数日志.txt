@@ -1,0 +1,270 @@
+#### 箭头函数
+
+箭头函数的语法比函数表达式更简洁，并且没有自己的this，argument，super或new，target。箭头函数表达式更适用于那些本来需要匿名函数的地方，并且他不能用作构造函数。
+
+const www = [
+
+​      'www1',
+
+​      'www2',
+
+​      'www3'
+
+];
+
+console.log(www.map(www => www.length));
+
+Array [8, 6, 7, 9]
+
+ES6可以使用“箭头”（=>）定义函数，注意是函数，不要使用这种方式定义类（构造器）
+
+一.语法
+
+1.具有一个参数的简单函数；
+
+var single = a => a
+
+single('hello,www') //"hello www"
+
+2.没有参数的需要用在箭头前加上小括号
+
+var log = () => {
+
+   alart('no param')
+
+}
+
+3.多个参数需要用到小括号，参数间逗号间隔，例如两个数字相加
+
+var add = (a,b) => a + b;
+
+add(3,8);
+
+4.函数体多条语句需要用到大括号
+
+var add = (a,b) => {
+
+​       if (typeof a == 'number' && typeof b == 'number') {
+
+​              return a + b    
+
+​       } else {
+
+​            return 0
+
+​       } 
+
+}
+
+5.返回对象时需要用小括号包起来，因为大括号被占用解释为代码块了
+
+var getHash = arr => {
+
+​       return ({
+
+​              name:'jack',
+
+​              age: 33
+
+​       })
+
+}
+
+6.直接作为事件handler
+
+document.addEventListener('click',ev => {
+
+​          console.log(ev)
+
+})
+
+7.作为数组排序回调
+
+var arr = [1,9,2,4,3,8].sort((a,b) => {
+
+​      if ( a - b > 0) {
+
+​            return 1
+
+​      } else {
+
+​            return -1
+
+​      }
+
+})
+
+arr //[1,2,3,4,8,9]
+
+#### 二.注意点
+
+1.typeof运算符和普通的fuction一样
+
+var func = a => a
+
+console.log(typeof func); // "function"
+
+2.instanceof也返回true，表明也是Function的实例
+
+console.log(func instanceof Function); //true
+
+3.this固定，不再善变
+
+obj = {
+
+​          data: ['www1','www2],
+
+​           init: function() {
+
+​                document.onclick = ev => {
+
+​                     alert (this.data) // ['www1','www2']
+
+​         }
+
+​           // 非箭头函数
+
+​           //document.onclick = function(ev) {
+
+​          //        alert(this.data) // undefined
+
+​          //}
+
+​    }
+
+}
+
+这个很有用，再不用写me，self, _this了，或者bind。
+
+4.箭头函数不能用new
+
+var Person = （name,age) => {
+
+​       this.name = name;
+
+​       this.age = age;
+
+}
+
+var p = new Func('www',22) //error
+
+5.不能使用argument
+
+var func = () => {
+
+​       console.log(arguments)
+
+}
+
+func(55)//
+
+对于5，在Firefox36里测试是可以输出55的，貌似并没有这个限制
+
+1.普通函数 this指向是：window
+
+  function sayHi() {
+
+​          console.log(this)//window
+
+​      }
+
+​      sayHi();
+
+2.对象函数this的指向是当前对象
+
+   var obj = {
+
+​          name: 'www'，
+
+​          age:18,
+
+​          sayHi() {
+
+​               console.log(this)// name: 'www'，age:18,
+
+​    }
+
+}
+
+obj.sayHi()
+
+3.构造函数this指向是，创建出来的实例
+
+function obj(name,age) {
+
+​            this.name = name;
+
+​            this.age = age;
+
+​            console.log('名字是：'+this.name+',age是'+this.age); //名字是：www,age是18
+
+}
+
+var fn = obj('www',18)
+
+4.apply和call **this的指向是,方法后的第一个参数**
+
+##### 5.箭头函数 他的this指向是上一层作用域中的this
+
+var obj = {
+
+​               name:'www',
+
+​                age:18,
+
+​                sayHi() {
+
+​                       setTimeout(()=> {
+
+​                          console.log(this) //name:'www',age:18,
+
+​                 },0)
+
+​                 setTimeout(function() {
+
+​                           console.log(this)//window
+
+​                 },0)
+
+​       }
+
+  }
+
+obj.sayHi()
+
+扩展知识：let声明的对象，不在window中，在script标签包裹的作用域中
+
+let username='刘亦菲'
+    var age=18
+      function sayHi(){
+        console.log(this.username)  //undefined
+        console.log(this.age)  //18
+      }
+      sayHi();
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

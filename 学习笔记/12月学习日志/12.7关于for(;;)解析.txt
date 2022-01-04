@@ -1,0 +1,30 @@
+例:
+
+const ds = (m,n) => {
+
+​           for(  ;   ; ) {
+
+​                   if(m >= 0 && n < s.length & s[m] == s[n]) {
+
+​                         m --;
+
+​                         n ++;
+
+​           } else {
+
+​                      break;
+
+​           }
+
+}
+
+​           res = n - m - 1 > res.length ? s.slice(m+1,n) : res;
+
+}
+
+意思是永循环，即死循环
+
+这是for语句的变种；循环体里必须有使程序趋于结束的语句，像 i++ i --
+
+判断条件应该在 { }之中，用break或者return返回
+

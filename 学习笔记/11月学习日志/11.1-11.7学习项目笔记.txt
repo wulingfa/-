@@ -1,0 +1,170 @@
+https://cn.vuejs.org/v2/cookbook/adding-instance-properties.html
+
+#### Vue.prototype详解
+
+如果需要设置全局变量，在main.js中,Vue实例化的代码里添加。
+
+不想污染全局作用域，这种情况下，可以通过在原型上定义它们使其在每个Vue的中可用。
+
+Vue.prototype.$appName = 'My App'
+
+这样$appName 就在所有的Vue实例中可用了，甚至在实例被创建之前就可以。
+
+#### 为什么appName要以$开头？
+
+
+
+$是在Vue所有实例中都可用的属性的一个简单约定，这样做会避免和已被定义的数据,方法，计算属性产生冲突；
+
+#### 什么冲突？
+
+如果写成：Vue.prototype.appName = 'My App'
+
+```js
+new Vue({
+  data: {
+    // 啊哦，`appName` *也*是一个我们定义的实例属性名！😯
+    appName: 'The name of some other app'
+  },
+```
+
+日志中会先出现'My App',然后出现"the name of some other app"，因为this.appName 在实例被创建之后被data覆写了；而我们通过$为实例属性设置作用域来避免这种事情发生。当然啦也可以根据自己喜好来使用自己的约定。诸如$_appName或&appName，来避免和插件或者未来的插件的冲突；
+
+JSON.parse();
+
+JSON通常用于和服务端交换数据；
+
+在接收服务器数据时一般是字符串；
+
+我们可以使用JSON.parse()方法将数据转换为Js对象；
+
+语法：JSON.parse(text[, reviver])
+
+参数说明：
+
+· text:必需，一个有效的JSON字符串
+
+·reviver:可选，一个转换结果的函数，将为对象的每个成员调用此函数；
+
+
+
+#### uni.getStorageSync(KEY)
+
+从本地缓存中同步获取指定Key对应的内容
+
+参数说明：
+
+| 参数 | 类型   | 必填 | 说明                   |
+| :--- | :----- | :--- | :--------------------- |
+| key  | String | 是   | 本地缓存中的指定的 key |
+
+#### 代码理解
+
+####   if(!url.**startsWith**('http')&&!url.**startsWith**('/')&&!/console|mobileplatform/.
+
+url.**startsWith**('http')：查询url是否以'http'开头；
+
+startsWith() 方法用于检测字符串是否以指定的子字符串开始。
+
+如果是以指定的子字符串开头返回 true，否则 false。
+
+startsWith() 方法对大小写敏感。
+
+console|mobileplatform/ ：接口名字，这个是接口的部分路径，然后和前面的拼起来就是完整的路径
+
+
+
+#### uni.**request**
+
+uni-app 进行http后台服务请求，一般使用request
+
+
+
+#### vue store 存储commit和dispatch的区别
+
+##### dispatch:含有异步操作，
+
+存储：
+
+this.$store.dispatch('setTargetUser',friend);
+
+取值：
+
+this.$store.getters.TargetUser
+
+##### commit:同步操作，
+
+存储：
+
+this.$store.commit('setTargetUser',friend)
+
+取值：
+
+this.$store.state.TargeUser
+
+
+
+
+
+#### 代码理解 
+
+* ##### @param {*} url  请求的url
+
+#####  \* @param {*} data  请求参数
+
+#####  \* @param {*} fileGroupId  附件上传的附件组
+
+#####  \* @param {*} storageType  存储类型
+
+作用：用注解来简化xml配置的时候，**@Param注解的作用是给参数命名，**参数命名后就能根据名字得到参数值，正确的将参数传入sql语句中(一般通过#{}的方式，${}会有sql注入的问题)  **即使用@Param注解** （后端）
+
+
+
+#### ${param.xxx}获取url中的参数
+
+EL表达式${param.xxx}可以从url中获取参数放在页面中直接使用
+
+例：127.0.0.1/test/testparam?test1=3&test2=sss
+
+用${param.test1}就可以直接获取到test1的值，也就是3;
+
+用${param.test2}就可以直接获取到test2的值，也就是sss;
+
+${param.xxx就等价于request.getparam('xxx'),也就是服务器从页面或者客户端获取的内容
+
+
+
+#### 什么是token?
+
+1.Token的引入：Token是在客户端频繁向服务端请求数据，服务端频繁的去数据库查询用户名和密码并进行对比，判断用户名和密码正确与否，并作出相应提示，在这样的背景下，Token便应运而生；
+
+2.Token的定义：Token是服务端生成的一串字符串，以作客户端进行请求的一个令牌，当第一次登陆后，服务器生成一个Token便将此Token返回给客户端，以后客户端只需带上这个Token前来请求数据即可，无需再次带上用户名和密码。
+
+
+
+3.使用Token的目的，Token的目的是为了减轻服务器的压力，减少频繁的查询数据库，使服务器更加精壮；
+
+
+
+二.如何使用Token？
+
+1.用设备号/设备mac地址作为Token（推荐）
+
+   客户端：客户端在登陆的时候获取设备的设备号/mac地址，并将其作为参数传递到服务端；
+
+   服务端：服务端接收到该参数后，便用一个变量来接收同时将其作为Token保存在数据库，并将该Token设置到session中，客户端每次请求的时候都要统一拦截，并将客户端传递的token和服务器session中的token进行对比，如果相同则放行，不同则拒绝；
+
+
+
+分析：此刻客户端和服务器端就统一了一个唯一的标识Token，而且保证了每一个设备拥有了一个唯一的会话。该方法的缺点是客户端需要带设备号/mac地址作为参数传递，而且服务器端还需要保存；优点是客户端不需重新登录，只要登陆一次以后一直可以使用，至于超时的问题是有服务器这边来处理，如何处理？若服务器的Token超时后，服务器只需将客户端传递的Token向数据库中查询，同时并赋值给变量Token，如此Token的超时又重新计时；
+
+
+
+2.用session值作为Token
+
+​    客户端：客户端只需携带用户名和密码登录即可；
+
+​    客户端：客户端接收到用户名和密码后并判断，如果正确了就将本地获取sessionID作为Token返回给客户端，客户端以后只需带上请求数据即可。
+
+​    分析：这种方式使用的好处是方便，不用存储数据，但是缺点就是当session过期后，客户端必须更新登录才能进行访问数据；
+

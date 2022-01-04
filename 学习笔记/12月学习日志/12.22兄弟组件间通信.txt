@@ -1,0 +1,213 @@
+![image-20211222180418979](C:\Users\www\AppData\Roaming\Typora\typora-user-images\image-20211222180418979.png)
+
+- 通过`props`可以实现父组件向子组件发送数据
+- 通过自定义事件可以实现子组件向父组件发送数据
+- 兄弟组件数据通讯除了借助共同的父组件做为通讯桥梁之外，还可以通过`eventBus`来让兄弟之间组件进行数据通讯
+
+### 通过EventBus进行兄弟间组件通讯
+
+随着应用程序越来越庞大，通过父组件来传递所有内容会把事情变得越来越棘手。不过我们还有另一种选择，那就是使用[`EventBus`](https://vuetips.com/global-event-bus)架起兄弟之间通讯的桥梁。接下来看看我们是如何利用这一点一完成兄弟组件之间的数据通讯。
+
+我们同样基于上面的示例来做修改。接下来的示例中，`ParentCard`组件包含了`SisterCard`和`BrotherCard`两个子组件，而且这两个子组件是兄弟组件。
+
+##### 首先在`main.js`文件中定义一个新的`eventBus`对象，其实他是一个全新的Vue实例：
+
+```html
+// main.js
+import Vue from 'vue'
+import App from './App'
+export const eventBus = new Vue()
+ 
+new Vue({
+    el: '#app',
+    render: h => h(App)
+})
+```
+
+##### 接着在新创建的`BrotherCard`组件导入`main.js`：
+
+```html
+<!-- BrotherCard.vue -->
+
+<script>
+
+    import { eventBus } from '../main'
+
+</script>
+```
+
+`eventBus`实例现在将成为`BrotherCard`组件中发出事件的实例。现在我们可以使用`eventBus.$emit`来替代上例中的`this.$emit`。`eventBus`是一个Vue实例，而且`eventBus`有这个`$emit`方法，这就是我们能够这么用的原因。这样做同样会触发相同的自定义事件名称和消息。
+
+```html
+methods: {
+
+    messageSister() {
+
+        eventBus.$emit('brotherSaid', '妈妈说，该做作业了！(^_^)!!!')
+
+    }
+}
+```
+
+同样可以在`SisterCard`组件中引入`eventBus`：
+
+```html
+<script>
+    import { eventBus } from '../main'
+</script>
+```
+
+将`created()`生命周期钩子添加到`SisterCard`组件。在`created()`钩子中添加`eventBus`启动自定义事件的侦听器。当使用`SisterCard`组件时，该侦听器将开始运行并且会保持运行。下面的代码只是侦听`brotherSaid`自定义事件，然后触发回调，将作为自定义事件有效负载传递的消息分配给`fromBrother`。
+
+```html
+created() {
+    eventBus.$on('brotherSaid', (message) => {
+
+        this.fromBrother = message
+
+    })
+
+}
+```
+
+这样就可以有条件地显示来自`BrotherCard`的信息：
+
+```html
+<div v-if="fromBrother" class="alert" v-html="fromBrother"></div>
+```
+
+上面看到的是如何通过`eventBus`实现`SisterCard`向`BrotherCard`传递数据的方式，反之，`BrotherCard`向SisterCard`传递数据也可以使用类似的方式。
+
+最终代码如下：
+
+```html
+<!-- SisterCard.vue -->
+
+<template>
+
+    <div class="message">
+        <div class="message-header">
+            <h5 v-text="theCardTitle"></h5>
+        </div>
+
+        <div class="message-body">
+            <p class="message-text">我是Sister组件</p>
+            <button @click="messageBrother" class="btn">给哥哥发消息</button>
+            <div v-if="fromBrother" class="alert" v-html="fromBrother"></div>
+        </div>
+    </div>
+
+
+</template>
+
+<script>
+
+    import { eventBus } from "../main";
+    export default {
+        name: "SisterCard",
+        data: () => ({
+            theCardTitle: "Sister Card",
+            fromBrother: ""
+        }),
+
+        methods: {
+            messageBrother() {
+                eventBus.$emit("sisterSaid", "妈妈说，该做作业了！(^_^)!!!");
+            }
+        },
+
+
+        created() {
+            eventBus.$on("brotherSaid", message => {
+                this.fromBrother = message;
+            });
+        }
+    };
+
+</script>
+
+
+<!-- BrotherCard.vue -->
+
+<template>
+
+    <div class="message">
+        <div class="message-header">
+           <h5 v-text="theCardTitle"></h5>
+        </div>
+
+
+       <div class="message-body">
+            <p class="message-text">我是Brother组件</p>
+            <button @click="messageSister" class="btn">给妹妹发消息</button>
+            <div v-if="fromSister" class="alert" v-html="fromSister"></div>
+        </div>
+   </div>
+</template>
+
+
+<script>
+
+    import { eventBus } from "../main.js";
+    export default {
+        name: "BrotherCard",
+        data: () => ({
+            theCardTitle: "Brother Card",
+            fromSister: ""
+        }),
+
+        methods: {
+            messageSister() {
+                eventBus.$emit("brotherSaid", "妈妈说，该做作业了！(^_^)!!!");
+            }
+        },
+        created() {
+            eventBus.$on("sisterSaid", message => {
+               this.fromSister = message;
+            });
+        }
+    };
+
+</script>
+```
+
+最后创建的`ParentCard`组件，我们可以像下面这样编码：
+
+```html
+<!-- ParentCard -->
+
+
+
+<template>
+
+    <div class="card">
+        <div class="card-header">
+            <h5 v-text="theCardTitle"></h5>
+        </div>
+
+        <div class="card-body">
+            <brother-card></brother-card>
+            <sister-card></sister-card>
+        </div>
+
+    </div>
+
+</template>
+
+
+<script>
+    import BrotherCard from "./BrotherCard";
+    import SisterCard from "./SisterCard";
+    export default {
+        name: "ParentCard",
+        data: () => ({
+            theCardTitle: "Parent Card"
+        }),
+        components: {
+            BrotherCard,
+            SisterCard
+        }
+    };
+
+</script>
+```

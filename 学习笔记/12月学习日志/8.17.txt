@@ -1,0 +1,493 @@
+1.说出一个圆旋转·：
+
+先创建一个width50px,height50px的div，设置背景颜色为白色，position:absolute绝对定位，border-radius:50%;动画时长设置为animation:yuan 11s;@keyframes yuan {0%transform: rotate(45deg)50%transform: rotate(360deg) }
+
+2.css实现三角形
+首先，需要把元素的宽度.高度设为0.然后设置边框样式,没有先把元素的宽高设为0的话最后展现出来的是一个上窄下宽或下窄上宽的梯形；
+采用的是均分原理
+非常有意思的是盒子都是一个矩形或正方形，从形状的中心，向4个角上下左右划分4个部
+width:0;
+height:0;
+border-top: 40px solid transparent;
+border-left: 40px solid transparent;
+border-right: 40px solid transparent;
+border-bottom: 40px solid #ff0000;
+
+3.图片懒加载，预加载
+  懒加载：懒加载的主要目的是作为服务器前端的优化，减少请求数或延迟请求数；
+  预加载：提前加载图片，当用户需要查看时可直接从本地缓存中渲染。
+  两种技术的本质：两者的行为是相反的，一个是提前加载，另一个是迟缓甚至不加载；
+  懒加载对服务器前端有一定的缓解压力作用，预加载则会增加服务器前端压力。
+实现方式：
+懒加载： 
+1.第一种是纯粹的延迟加载，使用seTimeOut或setInterval进行加载延迟(setTimeout() 只执行 code 一次。**如果要多次调用，请使用 setInterval() 或者让 code 自身再次调用 setTimeout()**)
+2.第二种是条件加载，符合某些条件，或触发了某些事件才开始异步下载；
+3.第三种是可视区加载，即仅加载用户可以看到的区域，这个主要是由监控滚动条来实现，一般会在距用户看到某图片前一定距离就开始加载，
+这样能保证用户拉下时刚好能看到图片。
+预加载：
+就是在使用该图片资源前，先加载到本地来，真正到使用时，直接从本地请求数据就行了
+常用的是new Image();，设置其src来实现预载，再使用onload方法回调预载完成事件。
+function loadImage(url,callback) {
+    var img = new Image();
+    img.src = url;
+    img.onload = function(){
+        img.onload = null;
+        callback.call(img);
+    }
+}
+
+2.flex布局；flex：1
+在传统的布局方式中，block 布局是把块在垂直方向从上到下依次排列的；而 inline 布局则是在水平方向来排列。
+弹性盒布局并没有这样内在的方向限制，可以由开发人员自由操作。更为高效
+Flex 是 Flexible Box 的缩写，意为"弹性布局"，用来为盒状模型提供最大的灵活性。
+适用场景：弹性布局适合移动端开发，在Android和ios也完美支持。
+flex:1;
+flex:1；===flex: 1 1 auto;
+第一个参数表示：flex-grow定义项目的放大比例，默认为0，即如果存在剩余空间也不放大；
+第二个参数表示：flex-shrink定义了项目的缩小比例，默认为1，即如果空间不足，该项目将缩小
+第三个参数表示：flex-basis给上面两个属性分配多余空间之前，计算项目是否有多余空间，默认值为auto,即项目本身的大小
+
+3.如何消除抖动现象：float
+1.clear语法：
+clear:none | left | right | both
+取值： 
+none：默认值。允许两边都可以有浮动现象
+left：不允许左边有浮动现象；right：右边；
+both：不允许有浮动现象
+2.方法二：
+直接在后面加上一个取消了浮动的空div:<div style="clear:both"></div>
+3.方法三：
+直接在父级元素加上overflow:hidden属性
+
+3.前后端交互
+1.cookie
+前台通过登录来存储cookie
+后台通过req.cookies()来获取存储的cookie信息
+2.jsonp
+jsonp是前后端结合跨域方式，因为前端请求到数据需要在回调函数中使用，所以后端得将数据放回到回调函数中
+3.AJAX
+AJAX是与服务器交换数据并更新部分网页的艺术，在不重新加载整个页面的情况下；
+主要是实现页面和web服务器之间数据的异步传输；
+常见使用场景：谷歌地图，还有一些弹幕，微博的时时更新评论等等；
+创建步骤：
+创建xhr对象->配置AJAX请求地址->发送请求->监听请求，接受响应
+//1：创建Ajax对象
+var xhr = window.XMLHttpRequest?new XMLHttpRequest():new ActiveXObject('Microsoft.XMLHTTP');// 兼容IE6及以下版本
+//2：配置 Ajax请求地址
+xhr.open('get','index.xml',true);
+//3：发送请求
+xhr.send(null); // 严谨写法
+//4:监听请求，接受响应
+xhr.onreadysatechange=function(){
+     if( xhr.readySate==4&&xhr.status==200 || xhr.status==304 )
+          console.log(xhr.responsetXML)
+}
+
+promise
+1、主要用于异步计算
+2、可以将异步操作队列化，按照期望的顺序执行，返回符合预期的结果
+3、可以在对象之间传递和操作promise，帮助我们处理队列
+翻译过来是承诺，承诺它过一段时间会给你一个结果；Promise对象是一个代理对象（代理一个值）
+一个Promise有以下几种状态：
+·pending：初始状态，既不是成功，也不是失败。
+·fulfilled：意味着操作成功完成
+·rejected：意味着操作失败
+同步任务：在主线程上排队执行任务，只有前一个任务执行完毕，才能执行后一个任务；
+异步任务：不进入主线程，而进入任务队列，只有等主线程任务执行完毕，“任务队列" 开始通知主线程，请求执行任务，
+该任务才会进入主线程执行
+
+async/await是一种建立在Promise之上的编写异步或非阻塞代码的新方法，被普遍认为是JS异步
+操作的最终且最优雅的解决方案。
+async是异步的意思，而await是async wait的简写，即异步等待
+
+Axios
+
+Axios是通过promise实现对ajax技术的一种封装，就像jQuery实现ajax封装一样，可以用在浏览器和node.js中。
+1.为什么使用axios？
+在vue中用axios进行网络请求。这个是vue作者推荐使用的
+功能特点：
+支持promiseAPI；
+支持拦截请求和相应；
+支持转换请求和响应数据；
+Axios拦截
+axios拦截分为请求式拦截跟响应式拦截
+request请求拦截器：发送请求前统一处理，如：设置请求头headers等。
+response响应拦截器：有时候我们要根据响应的状态码来进行下一步操作
+Axios请求式拦截
+axios.interceptors.request.use(config => {
+  config.interceptors = '请求拦截器'
+  return config
+}, function(error) {
+})
+Axios响应式拦截
+// http response 拦截器
+instance.interceptors.response.use(
+  response => {
+    //拦截响应，做统一处理 
+    if (response.data.code) {
+      switch (response.data.code) {
+        case 1002:
+          store.state.isLogin = false
+          router.replace({
+            path: 'login',
+            query: {
+              redirect: router.currentRoute.fullPath
+            }
+          })
+      }
+    }
+    return response
+  },
+  //接口错误状态处理，也就是说无响应时的处理
+  error => {
+    return Promise.reject(error.response.status) // 返回接口返回的错误信息
+  })
+
+4.跨域
+跨域：：指的是浏览器不能执行其他网站的脚本。它是由浏览器的同源策略造成的，是浏览器对js施加的安全限制
+例如：a页面想获取b页面资源，如果a、b页面的协议、域名、端口、子域名不同，所进行的访问行动都是跨域的
+而浏览器为了安全问题一般都限制了跨域访问，也就是不允许跨域请求资源。
+注意：跨域限制访问，其实是浏览器的限制。理解这一点很重要！！！
+同源策略：是指协议，域名，端口都要相同，其中有一个不同都会产生跨域；
+
+如何解决跨域问题?
+1.既然跨域会产生问题，那我们就不跨域了！
+首先用nginx作为代理服务器和用户交互，这样用户就只需要在80端口上进行交互，
+这样就避免了跨域问题，因为我们都是在80端口上进行交互的
+nginx实现跨域的原理，就是把web项目和后端接口项目放到一个域中，这样就不存在跨域问题，
+然后根据地址去请求不同服务器（真正干活的服务器）
+
+2.CORS：是一个W3C标准，全称是“跨域资源共享”允许浏览器向跨源服务器发出XMLHttpRequest请求，从而克服了AJAX只能同源使用的限制。
+浏览器将CORS请求分成两类：简单请求（simple request）和非简单请求（not-so-simple request）。
+简单请求：（1) 请求方法是这几种之一：HEAD，GET，POST；对于简单请求，浏览器直接发出CORS请求。具体来说，就是在头信息之中，增加一个Origin字段。
+非简单请求：非简单请求是那种对服务器有特殊要求的请求，比如请求方法是PUT或DELETE，或者Content-Type字段的类型是application/json。
+与JSONP的比较
+CORS与JSONP的使用目的相同，但是比JSONP更强大。
+JSONP只支持GET请求，CORS支持所有类型的HTTP请求。JSONP的优势在于支持老式浏览器，以及可以向不支持CORS的网站请求数据。
+
+4.说一下dom,bom;
+DOM是文档对象模型，指的是把文档当作一个对象来对待，这个对象主要定义了处理网页内容的方法和接口
+BOM是浏览器对象模型，指的是把浏览器当作一个对象来看待，这个对象定义了与浏览器进行交互的方法与接口。核心是window；
+Dom的最根本对象document也是Bom的window对象的子对象
+
+5.防抖节流
+函数防抖：是指在事件被触发n秒后再执行回调，如果在这n秒内事件又被触发，则重新计时。
+函数节流：是指规定一个单位时间，在这个单位时间内，只能有一个触发事件的回调函数执行，
+如果在同一个单位时间内某事件被触发多次，只有一次能生效。
+区别：防抖是将多次执行变成只执行最后一次，节流是将多次执行变为每隔一段时间执行。
+应用场景：
+防抖：
+search搜索联想，用户在不断输入值时，用防抖来节约请求资源
+window触发resize时，不断调整浏览器窗口大小会不断的触发事件，用防抖让其只触发一次
+使用在一些点击请求的事件上，避免因为用户的多次点击向后端发送请求；
+
+节流：
+鼠标不断点击触发，mousedown(单位时间内只触发一次)
+监听滚动事件，比如是否滑到底部自动加载更多，用throttle来判断
+
+6.slot插槽，v-model，vue2和vue3指令的区别；
+
+##### 规则：父级模板里的所有内容都是在父级作用域中编译的；子模板里的所有内容都是在子作用域中编译的
+
+1.什么是插槽
+
+官方文档解释：Vue实现了一套内容分发的API，将<slot>作为承载分发内容的出口。
+
+个人理解：
+
+插槽本质是对子组件的扩展，通过<slot>插槽向子组件内部指定位置传递内容。
+
+或者说：slot的出现是为了父组件可以正当的在子组件中加入内容。
+
+例子：
+
+##### 有句话叫一个萝卜一个坑。父组件想要在子组件中种萝卜，需要在子组件中挖个坑，<slot>就是一个【萝卜坑】。父组件想要给子组件添加的内容就是【萝卜】。
+
+##### 由此可见，萝卜种不种，种什么萝卜由父组件控制；萝卜坑在哪，由子组件控制。 换言之，插槽显不显示、怎样显示是由父组件来控制的，而插槽在哪里显示就由子组件来进行控制。
+
+例：
+
+```js
+<!-- 这是子组件哦-->
+<div class="child">
+  <h2>Child的标题</h2>
+  <slot>我是一个萝卜坑</slot>
+</div>
+```
+
+```xml
+<!-- 这是父组件哦-->
+<div class="father">
+  <h1>Father的标题</h1>
+  <Child>
+    我是个萝卜~
+  </Child>
+</div>
+```
+
+2.slot与props的区别：通过props属性，父组件可以向子组件传递属性、方法，可是父组件不能通过属性传递带标签的内容、甚至是组件，而插槽可以
+
+例：
+
+```js
+<!-- 这是父组件哦-->
+<div class="father">
+  <h1>Father的标题</h1>
+  <Child>
+    <button>我是一个按钮</button>  <!-- 带标签的内容-->
+    <Child2></Child2>             <!-- 组件-->
+  </Child>
+</div>
+```
+
+3.插槽的使用
+
+1）匿名插槽（单个插槽，默认插槽）
+
+匿名插槽就是没有设置name属性的插槽；
+
+可以放置在组件的任意位置；
+
+一个组件中只能有一个该类插槽；
+
+作为找不到匹配的内容片段时的备用插槽；
+
+匿名插槽只能作为没有slot属性的元素的插槽；
+
+```jsx
+<div class="child">
+    <h1>子组件</h1>
+     <slot name="head">头部默认值</slot>
+     <slot name="body">主体默认值</slot>
+     <slot>这是个匿名插槽(没有name属性)，这串字符是匿名插槽的默认值。</slot>
+ </div>
+```
+
+```jsx
+<div class="parent">
+ <h1>父组件</h1>
+ <child>
+     <p slot="body">我是主体</p>
+     <p>我是其他内容</p>
+     <p slot="footer">我是尾巴</p>
+ </child>
+ </div>
+```
+
+运行结果：
+
+父组件
+子组件
+头部默认值 （head的默认值被渲染：默认值只会在没有提供内容的时候被渲染。）
+我是主体 （body的默认值被覆盖）
+我是其他内容 （名插槽的默认值被覆盖）
+
+vue2插槽用法：
+<slot name="title">         //子组件
+
+<template slot="title">   //父组件
+  <h1>哈哈哈</h1>
+</template>          
+vue3中子组件用法不变，父组件需要使用v-slot：插槽名
+<template v-slot:title>
+  <h1>哈哈哈</h1>
+</template>
+vue2的v-model
+原理还是传递一个value参数和绑定了一个input事件
+vue3：
+默认是传递一个modelValue参数，修改通过update：modelValue来修改这个值，是可以传递多个v-model
+
+### 7.vuex和props,$emit，ref的区别；如何删除vuex；vuex的作用都有哪些；如何解决页面刷新时vuex保存的数据被清空(组件间传参)
+
+props和$emit：父组件向子组件传递数据通过props传递的，子组件传递数据给父组件是通过$emit触发事件来做到的
+ref:直接获取子组件实例，this.$refs.xxx 的方式进行操作。
+VueX：如果业务逻辑复杂，很多组件之间需要同时处理一些公共的数据，这个时候才有上面这一些方法可能不利于项目的维护，
+     vuex的做法就是将这一些公共的数据抽离出来，然后其他组件就可以对这个公共数据进行读写操作，这样达到了解耦的目的。
+
+#### 兄弟组件通信
+
+```
+Event Bus` 实现跨组件通信 `Vue.prototype.$bus = new Vue() Vuex
+```
+
+#### 跨级组件通信
+
+```
+$attrs、$listeners` `Provide、inject
+```
+
+如何清除重置vuex？
+1.创建一个mutation，将state重新赋值为初始值（可以在开始时深拷贝一个state对象）
+
+2.创建一个action，触发上面的mutation
+
+3.退出登陆时调用这个action
+
+vuex的作用？
+1.状态管理：可以将vue项目里面一些全局变量存放在vuex。可以简单的理解为项目的全局变量，
+注意的一点是Vuex里面的数据只要页面刷新就会丢失；
+最常用的功能：非兄弟,祖孙组件数据通信
+兄弟间通信：
+1.兄弟之间传递数据需要借助于事件车，通过事件车的方式传递数据eventBus
+2.创建一个Vue的实例，让各个兄弟公用同一个事件机制；
+3.主动发触发监听函数（传递数据方），通过一个事件触发bus,$emit（方法名，传递的数据）
+4.被动方定义事件监听函数（接收数据方），通过mounted(){}触发bus.$on(方法名，function)（接收数据的参数）{用该组件的数据接收传递过来的数据}，
+此时函数中的this已经发生了改变，可以使用箭头函数
+
+VueX为vue.js应用开发的状态管理模式。其实Vuex就是用来管理组件之间通信的一个插件。解决了组件之间同一状态的共享问题。
+因为它采用的是集中式存储管理应用的所有组件状态，所以组件就可以和store通讯了。
+vuex是Vue应用程序的状态管理模式+库。他充当应用程序中所有组件的集中存储，其规则确保状态只能以可预测的方式进行变更
+Vuex分成5个部分：
+State:单一状态树；
+Getters:状态获取
+Mutations:触发同步事件
+Actions：提交mutation，可以包含异步操作d
+Module：将vuex进行分模块
+
+如何解决页面刷新时vuex保存的数据被清空；
+通过监听页面刷新或者关闭来讲vuex里面的数据保存到sessionStorage里面，在页面加载时读取sessionStoage里的状态信息，更新vuex的数据；
+export default {
+  name: 'App',
+  created () {
+    //在页面加载时读取sessionStorage里的状态信息
+    if (sessionStorage.getItem("store") ) {
+        this.$store.replaceState(Object.assign({}, this.$store.state,JSON.parse(sessionStorage.getItem("store"))))
+    } 
+
+    //在页面刷新时将vuex里的信息保存到sessionStorage里
+    window.addEventListener("beforeunload",()=>{
+        sessionStorage.setItem("store",JSON.stringify(this.$store.state))
+    })
+  }
+}
+
+8.git,合并分支
+git是一种分布式的版本管理系统；GitHub是基于git的代码库托管站，其中一个主要的开源代码发布或托管站
+git的作用就是对文件进行版本管理，方便在不同版本进行切换修改，类似文件分不同时间备份然后需要时找回其中一份进行代替，不过更方便使用；GitHub某种程度上就是代码的网盘，也有开源开发商作为代码发布，存放，征集Bug和意见用。
+git上传项目指令：
+1.初始化
+   git init
+2.上传所有文件到缓存区
+    git add .
+3.上传所有文件到本地仓库
+    git commit -m "注释说明 可省略"
+4.关联gitlab
+    git remote add origin 这里放gitlab创建的项目链接
+     如果上面的代码运行出错，先运行[git remote rm origin]
+5.同步
+   git pull --rebase origin master
+合并分支：
+1.有一个主分支的代码
+2.首先建立一个分支代码。 
+   Team->Switch->New Brach
+3.在github上建立brh分支
+4.在brh分支上编写hello类
+5.当写完代码之后一定要先执行add，然后再执行commit。
+   执行Team->Add to Index
+   然后执行Team->Commit
+   在项目上执行：Team->Remote->push
+   选择下一步
+6.在github上查看分支代码
+7.切换到主分支
+   Team->Switch To->Master
+8.执行Team->merge
+   选中要合并的分支brh，点击 merch
+9.合并完成。
+   然后点击Team->remote->push
+
+9.箭头函数和普通函数的区别
+   1.外形不同  箭头函数使用箭头定义，普通函数没有
+   2.箭头函数都是匿名函数  普通函数可以有匿名函数，也可以有具体名函数，但是箭头函数都是匿名函数
+   3.箭头函数不能用于构造函数，不能使用new
+   4.箭头函数this为父作用域的this，不是调用时的this；箭头函数的this永远指向其父作用域，任何方法都改变不   了，包括call，apply，bind。普通函数的this指向调用它的那个对象。
+
+匿名函数：即没有名字的函数，js中用()代替
+
+// 具名函数
+function func(){
+  // code
+} 
+// 匿名函数
+let func=function(){
+  // code
+}	
+// 箭头函数全都是匿名函数
+let func=()=>{
+  // code
+}
+
+10.hooks
+
+mixins:是Vue2.x Options API中常用的代码逻辑抽离手段，在Vue3.x中也同样可以使用。
+
+vue中的hooks和mixins功能相似，但又比mixins具有一些优势：
+·hooks是函数
+·允许hooks间相互传递值
+·组件之间重用状态逻辑
+·明确指出逻辑来自哪里
+·可以帮助我们提高代码的复用性, 让我们能在不同的组件中都利用 hooks 函数
+
+11.setup函数的执行时机和注意点
+执行时机：
+1.时机位于beforeCreate和created之前
+2.beforeCreated:表示组件刚刚被创建出来，组件的data和methods还没初始化好
+3.created：表示组件刚刚被创建出来，并且组件的data和methods已经初始化好
+注意点：
+1.由于在执行setup函数时，还没有执行created生命周期方法，所以在setup函数中，是无法使用data和methods
+2.由于我们不能在setup函数中使用data和methods，所以VUE为了避免我们错误的使用直接将setup函数中this修改成了undefined
+3.setup函数只能同步的不能是异步的
+
+#### 12.require的核心原理是什么？
+
+require.js的核心原理是通过动态创建script脚本来异步引入模块，然后对每个脚本的load事件进行监听，
+如果每个脚本都加载完成了再调用回调函数。
+
+#### 13.arguments的对象是什么
+
+arguments对象是函数中传递的参数值的集合。是一个类似于数组的对象，因为他有一个length属性，
+我们可以使用数组索引表示法arguments[1]来访问单个值，但它没有数组中的内置方法，如：forEach，
+reduce,filter和map
+
+#### 14.什么是类？
+
+类（class）是在js中编写构造函数的新方法。它是使用构造函数的语法糖，在底层中使用仍然是原型和基于原型的继承。
+
+
+
+#### 16.事件循环
+
+同步任务：在主线程上排队执行任务，只有前一个任务执行完毕，才能执行后一个任务；
+异步任务：不进入主线程，而进入任务队列，只有等主线程任务执行完毕，“任务队列" 开始通知主线程，请求执行任务，
+该任务才会进入主线程执行
+
+理解为Event loop
+
+异步执行的运行机制如下：
+
+异步执行的运行机制如下：
+
+所有同步任务都在主线程上执行，形成一个执行栈（execution context stack）。
+
+主线程之外，还存在一个”任务队列”（task queue）。只要异步任务有了运行结果，就在”任务队列”之中放置一个事件。
+
+一旦”执行栈”中的所有同步任务执行完毕，系统就会读取”任务队列”，看看里面有哪些事件。那些对应的异步任务，于是结束等待状态，进入执行栈，开始执行。
+
+主线程从”任务队列”中读取事件，这个过程是循环不断的，所以整个的这种运行机制又称为Event Loop（事件循环）。只要主线程空了，就会去读取”任务队列”，这就是JavaScript的运行机制。这个过程会循环反复。
+
+#### 17.宏任务（macrotask ），微任务（microtask）
+
+macrotask 和 microtask 表示异步任务的两种分类。
+
+在挂起任务时，JS 引擎会将所有任务按照类别分到这两个队列中，首先在 macrotask 的队列（这个队列也被叫做 task queue）中取出第一个任务，执行完毕后取出 microtask 队列中的所有任务顺序执行；之后再取 macrotask 任务，周而复始，直至两个队列的任务都取完。
+
+![image-20210831151602357](C:\Users\www\AppData\Roaming\Typora\typora-user-images\image-20210831151602357.png)
+
+
+
+### 18.new
+
+new运算符创建一个用户定义的对象类型的实例或具有构造函数的内置对象的实例。new关键字会进行如下操作
+1.创建一个空的简单javaScript对象（即{}）;
+2.链接该对象（即设置该对象的构造函数）到另一个对象；
+3.将步骤1新创建的对象作为this的上下文；
+4.如果该函数没有返回对象，则返回this；

@@ -1,0 +1,48 @@
+continue：结束本次循环，直接跳入下一个循环；
+
+break：直接结束循环；
+
+return：官方定义return语句将终止当前函数并返回当前函数的值；
+
+throw：本例检测输入变量的值。如果值是错误的，会抛出一个异常（err）
+
+​               异常 (err) 通过 catch 语句捕获并自定义输出错误信息
+
+例：
+
+try {
+
+​      if(x == "") throw "is Empty";
+
+​      if(isNaN(x))throw "not a number";
+
+​      if(x > 10) throw "toooo high";
+
+​      if(x < 1)   throw "toooo low"
+
+}
+
+<p>请输出一个 5 到 10 之间的数字:</p>
+<input id="demo" type="text">
+<button type="button" onclick="myFunction()">测试输入</button>
+
+<p id="mess"></p>
+
+</body>
+</html>
+<script type="text/javascript">
+    function myFunction(){
+    try{ 
+        var x=document.getElementById("demo").value;   取元素的值
+
+        if(x=="")    throw "值为空";       根据获取的值，抛出错误
+        if(isNaN(x)) throw "不是数字";
+        if(x>10)     throw "太大";
+        if(x<5)      throw "太小";
+    }
+    catch(err){
+        var y=document.getElementById("mess");     抓住上面throw抛出的错误，给p标签显示
+        y.innerHTML="错误：" + err + "。";
+    }
+}
+</script>

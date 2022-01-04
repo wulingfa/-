@@ -1,0 +1,266 @@
+##### 1.简易版及问题
+
+   JSON.parse(JSON.stringify());
+
+估计这个api能覆盖大多数的应用场景；但是对于某些严格的场景来说，这个方法是有巨大的坑的。问题如下：
+
+1.无法解决循环引用的问题；举个例子：
+
+1.const a = {val:2};
+
+a.target = a;
+
+拷贝a会出现系统栈溢出，因为出现了无限递归的情况；
+
+2.无法拷贝--写特殊的对象，诸如RegExp，Date，Set，Map等；
+
+3.无法拷贝函数（重点）
+
+因此这个api先pass掉，我们重新写一个深拷贝，简易版如下：
+
+const deepclone = (target) => {
+
+​       if ( typeof target === 'object' && target !== null ) {
+
+​         const cloneTarget = Array.isArray(target) ? []:{};
+
+​         for ( let prop in target ) {
+
+​             if ( target.hasOwnProperty(prop) ) {
+
+​                    cloneTarget[prop] = deepClone(target[prop]);
+
+​             }
+
+​          }
+
+​         return cloneTarget;
+
+​     } else {
+
+​          return target;
+
+​    }
+
+}
+
+现在，我们以刚刚发现的三个问题为导向，一步步来完善，优化我们的深拷贝代码。
+
+##### 2.解决循环引用
+
+现在问题如下：
+
+let obj = { val: 100 };
+
+obj.target = obj;
+
+deepclone(obj); //报错：RangeError:Maximum call stack size exceeded
+
+这就是循环引用。我们怎么来解决这个问题呢？
+
+创建一个Map。记录下已经拷贝过的对象，如果说已经拷贝过，那直接返回就行了；
+
+const isObject = (target) => (typeof target === 'object' || typeof target === 'function') &&  target  !==  null;
+
+const deepClone = (target, map = new Map()) => {
+
+​    if(map.get(target))
+
+​        return target;
+
+​     if ( isObject(target) ) {
+
+​           map.set(target, true);
+
+​           const cloneTarget = Array.isArray(target) ? []: {};
+
+​           for (let prop in target) {
+
+​                  cloneTarget[prop] = deepClone(target[prop],map);
+
+​     }
+
+  }
+
+  return cloneTarget;
+
+} else {
+
+   return target;
+
+}
+
+}
+
+##### 3.拷贝特殊对象
+
+##### 可继续遍历
+
+对于特殊的对象，我们使用以下方式来鉴别：
+
+Object.prototype.toString.call(obj);
+
+梳理一下对于可遍历对象会有什么结果：
+
+["object Map"]
+
+["object Set"]
+
+["object Array"]
+
+["object Object"]
+
+["object Arguments"]
+
+好，以这些不同的字符串为依据，我们就可以成功地鉴别这些对象；
+
+const getType = Object.prototype.toString.call(obj);
+
+const canTraverse = {
+
+​       '[object Map]': true,
+
+​       '[ object Set ]': true,
+
+​       '[object Array]' : true,
+
+​       '[object Object]': true,
+
+​       '[object Arguments]':true,
+
+};
+
+const deepClone = (target, map = new Map()) => {
+
+​       if(!isObject(target))
+
+​            return target;
+
+​       let type = getType(target);
+
+​       let cloneTarget;
+
+​       if(!canTraverse[type]) {
+
+​           //处理不能遍历的对象
+
+​            return;
+
+​    } else {
+
+​       // 这波操作相当关键，可以保证对象那个的原型不丢失；
+
+​       let ctor = target.prototype;
+
+​       cloneTarget = new ctor();
+
+​    }
+
+​      if(map.get(target))
+
+​           return target;
+
+​       map.put(target,true);
+
+
+
+​       if(type === mapTag) {
+
+​          //处理Map
+
+​          target.forEach((item,key) => {
+
+​                 cloneTarget.set(deepClone(key),deepClone(item));
+
+   })
+
+}
+
+if(type === setTag) {
+
+   //处理set
+
+​     target.forEach(item => {
+
+​          target.add(deepClone(item));
+
+​      })
+
+}
+
+
+
+//处理数组和对象
+
+for (let prop in target) {
+
+​       if(target.hasOwnProperty(prop)) {
+
+​              cloneTarget[prop] = deepClone(target[prop]);
+
+​      }
+
+}
+
+   return cloneTarget;
+
+}
+
+对于不可遍历的对象，不同的对象有不同的处理
+
+const handleRegExp = (target) => {
+  const { source, flags } = target;
+  return new target.constructor(source, flags);
+}
+
+const handleFunc = (target) => {
+  // 待会的重点部分
+}
+
+const handleNotTraverse = (target, tag) => {
+  const Ctor = targe.constructor;
+  switch(tag) {
+    case boolTag:
+    case numberTag:
+    case stringTag:
+    case errorTag: 
+    case dateTag:
+      return new Ctor(target);
+    case regexpTag:
+      return handleRegExp(target);
+    case funcTag:
+      return handleFunc(target);
+    default:
+      return new Ctor(target);
+  }
+}
+
+##### 4.拷贝函数
+
+虽然函数也是对象，但是它过于特殊，我们单独把它拿出来拆解；
+
+提到函数，在JS中有两种函数，一种是普通函数，另一种是箭头函数；每个普通函数都是Function的实例，而箭头函数不是任何类的实例，每次调用都是不一样的引用；那我们只需要处理普通函数的情况，箭头函数直接返回它本身就好了；
+
+如何来区分两者？
+
+利用原型，箭头函数是不存在原型的；
+
+const handleFunc = (func) => {
+  // 箭头函数直接返回自身
+  if(!func.prototype) return func;
+  const bodyReg = /(?<={)(.|\n)+(?=})/m;
+  const paramReg = /(?<=\().+(?=\)\s+{)/;
+  const funcString = func.toString();
+  // 分别匹配 函数参数 和 函数体
+  const param = paramReg.exec(funcString);
+  const body = bodyReg.exec(funcString);
+  if(!body) return null;
+  if (param) {
+    const paramArr = param[0].split(',');
+    return new Function(...paramArr, body[0]);
+  } else {
+    return new Function(body[0]);
+  }
+}
+
+到现在，我们的深拷贝就实现的比较完善了。

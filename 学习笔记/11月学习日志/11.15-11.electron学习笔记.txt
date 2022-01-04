@@ -1,0 +1,33 @@
+https://www.w3cschool.cn/electronmanual/p9al1qkx.html
+
+1.Electron可以让我们使用纯javaScript调用丰富的原生APIs来创造桌面应用。可以把它看作是专注于桌面应用而不是web服务器，io.js的一个变体；
+
+这不意味着Electron是绑定了GUI库的javaScript，相反Electron使用web页面作为它的GUI，所以能把它看作成一个被javaScript控制的精简版的Chromium浏览器；
+
+#### 主进程
+
+在Electron里，运行pack.json里main脚本的进程被称为主进程
+
+大体上，一个Electron应用的目录结构如下：
+
+my-app/
+
+|-->package.json
+
+|-->main.js
+
+|-->index.html
+
+主线程除了以下代码：
+
+ipcMain.**on**("send-message-to-main-test",(event,args)=> {
+
+ console.**log**("主进程接收到的数据是：",args);
+
+ event.**reply**("send-message-to-render-test","来自主进程的问候")
+
+})
+
+还有一种方法可以主动和渲染进程说话:
+
+mainwindow.webContents.send("****")
