@@ -1,0 +1,59 @@
+1.示例
+
+    <div class="container">
+        <div class="box">我要水平垂直居中</div>
+    </div>
+
+.container{
+    border: 2px solid black;
+    background-color: chartreuse;
+    width: 200px;
+    height: 200px;
+    text-align: center;
+    line-height: 200px;
+}
+.box{
+    display: inline-block;
+    line-height: normal;
+    font-size: 1rem;
+    vertical-align: middle;
+    background-color: cornflowerblue;
+}
+
+结果是可以居中的
+
+2.一些知识点
+
+2.1水平垂直对齐
+
+·text-align： 不仅可以作用在文本，还可以对行内元素和行内块元素有效果，设置水平对齐方式
+
+·vertical-align：只对行内元素和行内块元素起作用，设置元素的垂直对齐方式
+
+2.2line-height
+
+简短：当元素height等于line-height时，元素内部的文本就会垂直居中
+
+·MDN：line-height可用于多行文本的间距或者是单行文本的高度等
+
+·没给元素设置高度时，元素高度采用的是line-height的高度，这个属性具有继承性。也自带默认值，所以当你给一个没有设置高度的元素设置line-height：0，即使里面有文本，他也是会塌陷的。
+
+·可以分为好几种盒子，当你设置line-height的时候，行内框是不会变化的，改变的是行距，它只由font-size的决定。这其实就是上边元素height等于line-height的时候，元素内文本会垂直居中的原因。
+
+·取值为number时，line-height为number乘以当前元素的font-size，取normal时一般就是number为1.2
+
+
+
+vertical-align注释掉是会产生变化的；inline-block的基线元是最后一个基线集，如果inline-block为空，那么他的最后一个基线集为margin-box合成，即它margin的底部。如果它内部存在文本，即为最后一行文本的基线。那么上面的东西只是基线集位置或者对齐方式发生了改变而已。比如A观点，注释掉后只是改变了对齐方式，所以对于baseline与X-Height中心点不在同一位置的字体，必定发生改变；文字加多了最后的基线集位置相对于整个line-block发生改变了，所以盒子就自然向上移了。
+
+
+
+
+
+基线源：
+
+基线集：
+
+IFC：
+
+BFC：
