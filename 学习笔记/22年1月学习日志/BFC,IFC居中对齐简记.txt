@@ -1,0 +1,124 @@
+https://juejin.cn/post/7015117674422206494
+
+https://juejin.cn/post/7026249448233631752
+
+https://juejin.cn/post/7044077808259170312	
+
+https://www.w3.org/TR/css-inline-3/#propdef-baseline-source
+
+1.示例
+
+    <div class="container">
+        <div class="box">我要水平垂直居中</div>
+    </div>
+
+.container{
+    border: 2px solid black;
+    background-color: chartreuse;
+    width: 200px;
+    height: 200px;
+    text-align: center;
+    line-height: 200px;
+}
+.box{
+    display: inline-block;
+    line-height: normal;
+    font-size: 1rem;
+    vertical-align: middle;
+    background-color: cornflowerblue;
+}
+
+结果是可以居中的
+
+2.一些知识点
+
+2.1水平垂直对齐
+
+·text-align： 不仅可以作用在文本，还可以对行内元素和行内块元素有效果，设置水平对齐方式
+
+·vertical-align：只对行内元素和行内块元素起作用，设置元素的垂直对齐方式
+
+2.2line-height
+
+简短：当元素height等于line-height时，元素内部的文本就会垂直居中
+
+·MDN：line-height可用于多行文本的间距或者是单行文本的高度等
+
+·没给元素设置高度时，元素高度采用的是line-height的高度，这个属性具有继承性。也自带默认值，所以当你给一个没有设置高度的元素设置line-height：0，即使里面有文本，他也是会塌陷的。
+
+·可以分为好几种盒子，当你设置line-height的时候，行内框是不会变化的，改变的是行距，它只由font-size的决定。这其实就是上边元素height等于line-height的时候，元素内文本会垂直居中的原因。
+
+·取值为number时，line-height为number乘以当前元素的font-size，取normal时一般就是number为1.2
+
+
+
+vertical-align注释掉是会产生变化的；inline-block的基线元是最后一个基线集，如果inline-block为空，那么他的最后一个基线集为margin-box合成，即它margin的底部。如果它内部存在文本，即为最后一行文本的基线。那么上面的东西只是基线集位置或者对齐方式发生了改变而已。比如A观点，注释掉后只是改变了对齐方式，所以对于baseline与X-Height中心点不在同一位置的字体，必定发生改变；文字加多了最后的基线集位置相对于整个line-block发生改变了，所以盒子就自然向上移了。
+
+
+
+### 基线
+
+https://www.w3.org/TR/css-writing-modes-3/#intro-baselines
+
+一个基线是沿行框的行内轴的一条线，文本的各个字形沿该线对齐。基线指导字体中的字形的设计（大概了解）
+
+![image-20220107174132848](C:\Users\www\AppData\Roaming\Typora\typora-user-images\image-20220107174132848.png)
+
+
+
+
+
+### IFC：
+
+简记:水平放置
+
+inline Formatting Contexts,也就是“内联格式化上下文”
+
+符合以下任一条件即会生成一个IFC
+
+·块级元素中仅包含内联级别元素
+
+形成条件非常简单，需要注意的是当IFC中有块级元素插入时，会产生两个匿名块将父元素分割开来，产生两个IFC；
+
+IFC布局规划：
+
+·子元素水平方向横向排列，并且垂直方向起点为元素顶部；
+
+·子元素只会计算横向样式空间，【padding，border，margin】，垂直方向样式空间不会被计算，【padding，border，margin】
+
+·在垂直方向上，子元素会以不同形式来对齐（vertical-align）
+
+·能把在一行上的框都完全包含进去的一个矩形区域，被称为该行的行框（line box).行框的宽度是由包含块（conaining box）和其中的浮动来决定。
+
+### BFC：
+
+简记：垂直放置
+
+BFC（Block Formatting Context）格式化上下文，是web页面中盒模型布局的css渲染模式，指一个独立的渲染区域或者说是一个隔离的独立容器
+
+#### 形成BFC的条件
+
+1.浮动，float出none以外的值；
+
+2.定位，position（absolute，fixed）；
+
+3.display为一下其中之一的值inline-block，table-cell,table-caption;
+
+##### display:table-cell:
+
+给父元素<div>设置display:table，子元素<pr>设置display:table-cell，再加上一个vertical-align:middle（默认情况下，图片，按钮，文字和单元格都可以用vertical-align属性），于是单行多行的文本垂直居中问题就解决了，不论内容有多少，不论行高是多少，总之都会整体垂直居中
+
+4.overflow除了visible以外的值（hidden,auto,sccroll)；
+
+#### BFC的特性
+
+1.内部的Box会在垂直方向上一个接一个的放置；
+
+2.垂直方向上的距离由margin决定
+
+3.bfc的区域不会与float的元素区域重叠
+
+4.bfc就是页面上的一个独立容器，容器里面的子元素不会影响外面元素
+
+5.bfc就是页面上的一个独立容器，容器里面的子元素不会影响外面元素
+
